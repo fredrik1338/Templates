@@ -1,0 +1,15 @@
+# Playground-specific ignores
+
+# Private keys generated during exercises
+*.key
+playground.key
+
+# Encrypted files created during practice
+*.enc.yaml
+*.enc.json
+
+# Decrypted outputs
+*.decrypted.*
+
+# Environment files
+.env

@@ -1,0 +1,15 @@
+{
+  "services": {
+    "stripe": {
+      "publishable_key": "pk_test_abc123",
+      "secret_key": "sk_test_xyz789"
+    },
+    "sendgrid": {
+      "api_key": "SG.abcdefghijklmnop"
+    },
+    "aws": {
+      "access_key_id": "AKIAIOSFODNN7EXAMPLE",
+      "secret_access_key": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+# SOPS Configuration
+# See: https://github.com/getsops/sops#using-sopsyaml-conf-to-select-kms-pgp-for-new-files
+#
+# Replace placeholder keys with your team's actual public keys.
+# Rules are evaluated in order - first match wins.
+
+creation_rules:
+  # Production secrets - restricted access
+  - path_regex: secrets/prod/.*\.yaml$
+    age: >-
+      age1[ADMIN_KEY_1],
+      age1[ADMIN_KEY_2],
+      age1[CI_CD_KEY]
+
+  # Staging secrets - senior team access
+  - path_regex: secrets/staging/.*\.yaml$
+    age: >-
+      age1[ADMIN_KEY_1],
+      age1[ADMIN_KEY_2],
+      age1[SENIOR_DEV_KEY_1],
+      age1[CI_CD_KEY]
+
+  # Development secrets - full team access
+  - path_regex: secrets/dev/.*\.yaml$
+    age: >-
+      age1[ADMIN_KEY_1],
+      age1[ADMIN_KEY_2],
+      age1[SENIOR_DEV_KEY_1],
+      age1[DEV_KEY_1],
+      age1[DEV_KEY_2],
+      age1[CI_CD_KEY]
+
+  # Default rule for any .enc.yaml file
+  - path_regex: \.enc\.yaml$
+    age: >-
+      age1[ADMIN_KEY_1],
+      age1[ADMIN_KEY_2]

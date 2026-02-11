@@ -1,0 +1,29 @@
+# Playground SOPS Configuration
+#
+# SETUP: Replace YOUR_PUBLIC_KEY_HERE with your age public key
+#        Run: grep "public key" playground.key
+#
+# This configuration is for learning purposes only.
+# For production, see ../configuration/sops-yaml-config.md
+
+creation_rules:
+  # Encrypt only sensitive fields in config files
+  - path_regex: samples/app-config\.yaml$
+    encrypted_regex: ^(password|secret|key|token)$
+    age: YOUR_PUBLIC_KEY_HERE
+
+  # Fully encrypt database credentials
+  - path_regex: samples/database\.yaml$
+    age: YOUR_PUBLIC_KEY_HERE
+
+  # JSON files
+  - path_regex: .*\.json$
+    age: YOUR_PUBLIC_KEY_HERE
+
+  # Default rule for any .enc.yaml file
+  - path_regex: \.enc\.yaml$
+    age: YOUR_PUBLIC_KEY_HERE
+
+  # Catch-all for exercises
+  - path_regex: .*\.yaml$
+    age: YOUR_PUBLIC_KEY_HERE

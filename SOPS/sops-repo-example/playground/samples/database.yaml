@@ -1,0 +1,23 @@
+# Database Credentials
+# Practice fully encrypting this file
+
+production:
+  host: prod-db.example.com
+  port: 5432
+  database: production_db
+  username: prod_admin
+  password: prod_password_123
+
+staging:
+  host: staging-db.example.com
+  port: 5432
+  database: staging_db
+  username: staging_user
+  password: staging_password_456
+
+development:
+  host: localhost
+  port: 5432
+  database: dev_db
+  username: dev_user
+  password: dev_password_789

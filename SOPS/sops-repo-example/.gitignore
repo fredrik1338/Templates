@@ -1,0 +1,28 @@
+# Decrypted secrets - NEVER commit these
+*.decrypted.yaml
+*.decrypted.json
+*.decrypted.env
+
+# Unencrypted secrets (before encryption)
+secrets.yaml
+secrets.json
+
+# Environment files with secrets
+.env
+.env.local
+.env.*.local
+
+# Private keys
+*.key
+*.pem
+keys.txt
+age.key
+
+# Editor backups
+*~
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
