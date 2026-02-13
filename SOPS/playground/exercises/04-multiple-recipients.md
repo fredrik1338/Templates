@@ -65,8 +65,11 @@ Add or remove recipients from an existing encrypted file:
 age-keygen -o newperson.key
 NEWPERSON_KEY=$(grep "public key" newperson.key | cut -d: -f2 | tr -d ' ')
 
+# Backup the original .sops.yaml so we can restore it later
+cp .sops.yaml .sops.yaml.backup
+
 # Update .sops.yaml with all three keys
-cat > .sops.yaml.new << EOF
+cat > .sops.yaml << EOF
 creation_rules:
   - path_regex: .*
     age: >-
@@ -143,7 +146,11 @@ In your own repository:
 ## Clean Up
 
 ```bash
-rm -f samples/*.enc.yaml teammate.key newperson.key .sops.yaml.new
+# Restore the original .sops.yaml
+mv .sops.yaml.backup .sops.yaml
+
+# Remove generated files
+rm -f samples/*.enc.yaml teammate.key newperson.key
 ```
 
 ## Congratulations!
@@ -155,5 +162,5 @@ You've completed all exercises. You now know how to:
 - Manage multiple recipients
 
 Next steps:
-- Read the [ways of working](../../ways-of-working/) for team practices
-- Apply this knowledge to your own repository
+- See [your-repo](../../your-repo/) for guides on setting up your own repository
+- Read the [ways of working](../../your-repo/ways-of-working/) for team practices

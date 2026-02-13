@@ -81,5 +81,5 @@ Share your **public key** with the team admin to be added to the `.sops.yaml` co
 
 ## Next Steps
 
-- [Create your first encrypted secret](first-secret.md)
-- [Configure .sops.yaml](../configuration/sops-yaml-config.md)
+- [Verify your setup](first-secret.md) - Quick test that everything works
+- [Learn SOPS](../playground/) - Hands-on exercises in the playground
