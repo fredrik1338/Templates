@@ -5,8 +5,8 @@ A hands-on environment to practice SOPS commands before applying them to your ow
 ## Prerequisites
 
 Before starting, ensure you have:
-- SOPS installed ([installation guide](../getting-started/installation.md))
-- age installed ([installation guide](../getting-started/installation.md#install-age-recommended-key-provider))
+- SOPS installed ([installation guide](../installation/installation.md))
+- age installed ([installation guide](../installation/installation.md#install-age-recommended-key-provider))
 
 ## Quick Setup
 
@@ -81,14 +81,10 @@ rm -f samples/*.enc.yaml samples/*.enc.json
 rm -f playground.key
 ```
 
-## Applying to Your Own Repository
+## Next Steps
 
-Once comfortable with SOPS:
+Once comfortable with SOPS, see [your-repo](../your-repo/) for guides on setting up secrets management in your own projects:
 
-1. **Copy `.sops.yaml`** to your repository root
-2. **Update keys** with your team's actual public keys
-3. **Create directory structure** for secrets (e.g., `secrets/dev/`, `secrets/prod/`)
-4. **Add to `.gitignore`**: decrypted files, private keys, `.env` files
-5. **Document** your team's specific workflows
-
-See [ways of working](../ways-of-working/) for team practices.
+- [Configuration](../your-repo/configuration/) - `.sops.yaml` rules and key management
+- [Examples](../your-repo/examples/) - Real-world usage patterns
+- [Ways of working](../your-repo/ways-of-working/) - Team practices and workflows

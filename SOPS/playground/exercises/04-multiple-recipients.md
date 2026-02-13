@@ -162,5 +162,5 @@ You've completed all exercises. You now know how to:
 - Manage multiple recipients
 
 Next steps:
-- Read the [ways of working](../../ways-of-working/) for team practices
-- Apply this knowledge to your own repository
+- See [your-repo](../../your-repo/) for guides on setting up your own repository
+- Read the [ways of working](../../your-repo/ways-of-working/) for team practices

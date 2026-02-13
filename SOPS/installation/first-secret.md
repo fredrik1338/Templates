@@ -105,5 +105,5 @@ You're trying to encrypt an already-encrypted file. Use `sops` (edit mode) inste
 
 ## Next Steps
 
-- [Configure .sops.yaml rules](../configuration/sops-yaml-config.md)
-- [Key management best practices](../configuration/key-management.md)
+- [Learn SOPS](../playground/) - Work through the hands-on exercises
+- [Set up your own repo](../your-repo/) - Configuration guides for your projects
