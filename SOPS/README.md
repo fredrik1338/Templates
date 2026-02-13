@@ -1,6 +1,7 @@
 # SOPS Secrets Management
 
-Learn and implement encrypted secrets management using [SOPS](https://github.com/getsops/sops) (Secrets OPerationS).
+This is a repo in which we teach you about encrypting and managing secrets using SOPS.
+We start by installing all pre-requisites, then learn the tools in our playground and finally youll learn how to set everything up in your own repo.
 
 ---
 
