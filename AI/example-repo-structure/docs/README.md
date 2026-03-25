@@ -4,14 +4,12 @@ Human-centered documentation for the project.
 
 ## Structure
 
-This folder mirrors the code structure:
-
 ```
 docs/
-├── frontend/        # Frontend documentation
-├── backend/         # Backend documentation
-├── infrastructure/  # Infrastructure documentation
-└── CI-CD/           # CI/CD documentation
+├── CI-CD/              # CI/CD workflows, deployment, rollback
+├── infrastructure/     # Infrastructure architecture, environments
+├── frontend/           # Frontend documentation
+└── backend/            # Backend documentation
 ```
 
 ## Purpose

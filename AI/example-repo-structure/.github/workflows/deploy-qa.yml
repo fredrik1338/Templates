@@ -1,0 +1,83 @@
+# =============================================================================
+# Deploy QA — Manual QA/Staging Deployment
+# =============================================================================
+# Manually triggered to deploy a specific version to QA for validation
+# before production. Typically run after a release PR is merged.
+#
+# Uses the same images that will later go to production.
+# =============================================================================
+
+name: Deploy QA
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to deploy (e.g., 1.2.3). Leave empty to deploy from HEAD."
+        type: string
+        required: false
+
+# env:
+#   ENVIRONMENT: qa
+#   REGION: <preferred-region>
+#   PROJECT_ID: <project>-qa
+
+jobs:
+  # --- Resolve version ---
+  # resolve-version:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     version: ${{ steps.resolve.outputs.version }}
+  #     image_tag: ${{ steps.resolve.outputs.image_tag }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - id: resolve
+  #       run: |
+  #         if [ -n "${{ inputs.version }}" ]; then
+  #           echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+  #           echo "image_tag=v${{ inputs.version }}" >> $GITHUB_OUTPUT
+  #         else
+  #           echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
+  #           echo "image_tag=${{ github.sha }}" >> $GITHUB_OUTPUT
+  #         fi
+
+  # --- Security scan ---
+  security:
+    uses: ./.github/workflows/security-scan.yml
+    with:
+      scan_history: false
+      fail_on_high: true
+
+  # --- Build & Deploy ---
+  # deploy:
+  #   needs: [resolve-version, security]
+  #   runs-on: ubuntu-latest
+  #   environment: qa
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: ./.github/actions/cloud-auth
+  #       with:
+  #         workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+  #         service_account: ${{ secrets.WIF_SERVICE_ACCOUNT_QA }}
+  #
+  #     # Build images tagged with version
+  #     # - run: docker build -t $REGISTRY/backend:$IMAGE_TAG ./backend
+  #     # - run: docker build -t $REGISTRY/frontend:$IMAGE_TAG ./frontend
+  #     # - run: docker push $REGISTRY/backend:$IMAGE_TAG
+  #     # - run: docker push $REGISTRY/frontend:$IMAGE_TAG
+  #
+  #     # Run database migrations
+  #     # - run: cd backend && npx prisma migrate deploy
+  #
+  #     # Deploy services
+  #     # - run: |
+  #     #     cloud-cli deploy backend \
+  #     #       --image $REGISTRY/backend:$IMAGE_TAG \
+  #     #       --region $REGION
+  #     # - run: |
+  #     #     cloud-cli deploy frontend \
+  #     #       --image $REGISTRY/frontend:$IMAGE_TAG \
+  #     #       --region $REGION
+  #
+  #     # Health check
+  #     # - run: curl --fail --retry 5 --retry-delay 10 $BACKEND_URL/health

@@ -1,0 +1,143 @@
+# =============================================================================
+# Deploy Production — Manual Production Release
+# =============================================================================
+# Manually triggered (manual trigger = approval gate). Deploys a specific
+# version to production with full security scanning and validation.
+#
+# Flow:
+#   1. Validate version (must be semver, must not already exist as tag)
+#   2. Security scan (all layers, strict mode)
+#   3. Build container images tagged with version
+#   4. Scan container images for vulnerabilities
+#   5. Generate SBOMs (Software Bill of Materials)
+#   6. Run database migrations
+#   7. Deploy services
+#   8. Validate deployment health
+#   9. Create GitHub Release with SBOMs attached
+# =============================================================================
+
+name: Deploy Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      allow_existing_images:
+        description: "Skip image build and use existing images (for retry after build succeeded but deploy failed)"
+        type: boolean
+        default: false
+
+# env:
+#   ENVIRONMENT: prod
+#   REGION: <preferred-region>
+#   PROJECT_ID: <project>-prod
+
+jobs:
+  # --- Read and validate version ---
+  # version:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     version: ${{ steps.read.outputs.version }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - id: read
+  #       run: |
+  #         VERSION=$(cat VERSION)
+  #         # Validate semver format
+  #         if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  #           echo "::error::Invalid version format: $VERSION"
+  #           exit 1
+  #         fi
+  #         # Check tag doesn't already exist (unless retrying)
+  #         if [ "${{ inputs.allow_existing_images }}" != "true" ]; then
+  #           if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+  #             echo "::error::Tag v$VERSION already exists"
+  #             exit 1
+  #           fi
+  #         fi
+  #         echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+  # --- Security scan (strict) ---
+  security:
+    uses: ./.github/workflows/security-scan.yml
+    with:
+      scan_history: true
+      fail_on_high: true
+
+  # --- Build, scan images, generate SBOMs ---
+  # build:
+  #   needs: [version, security]
+  #   if: inputs.allow_existing_images != true
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: ./.github/actions/cloud-auth
+  #       with:
+  #         workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+  #         service_account: ${{ secrets.WIF_SERVICE_ACCOUNT_PROD }}
+  #
+  #     # Build images
+  #     # - run: docker build -t $REGISTRY/backend:v$VERSION ./backend
+  #     # - run: docker build -t $REGISTRY/frontend:v$VERSION ./frontend
+  #     # - run: docker push $REGISTRY/backend:v$VERSION
+  #     # - run: docker push $REGISTRY/frontend:v$VERSION
+  #
+  #     # Scan container images
+  #     # - uses: aquasecurity/trivy-action@master
+  #     #   with:
+  #     #     image-ref: $REGISTRY/backend:v$VERSION
+  #     #     severity: HIGH,CRITICAL
+  #     #     exit-code: 1
+  #
+  #     # Generate SBOMs (CycloneDX format)
+  #     # - run: trivy image --format cyclonedx -o backend-sbom.json $REGISTRY/backend:v$VERSION
+  #     # - run: trivy image --format cyclonedx -o frontend-sbom.json $REGISTRY/frontend:v$VERSION
+  #     # - uses: actions/upload-artifact@v4
+  #     #   with:
+  #     #     name: sboms
+  #     #     path: "*-sbom.json"
+
+  # --- Deploy ---
+  # deploy:
+  #   needs: [version, security, build]
+  #   if: always() && !failure() && !cancelled()
+  #   runs-on: ubuntu-latest
+  #   environment: production
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: ./.github/actions/cloud-auth
+  #       with:
+  #         workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+  #         service_account: ${{ secrets.WIF_SERVICE_ACCOUNT_PROD }}
+  #
+  #     # Database migrations
+  #     # - run: cd backend && npx prisma migrate deploy
+  #
+  #     # Deploy services
+  #     # - run: |
+  #     #     cloud-cli deploy backend \
+  #     #       --image $REGISTRY/backend:v$VERSION \
+  #     #       --region $REGION
+  #     # - run: |
+  #     #     cloud-cli deploy frontend \
+  #     #       --image $REGISTRY/frontend:v$VERSION \
+  #     #       --region $REGION
+  #
+  #     # Health validation
+  #     # - run: curl --fail --retry 5 --retry-delay 10 $BACKEND_URL/health
+
+  # --- Create GitHub Release ---
+  # release:
+  #   needs: [version, deploy]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: sboms
+  #     - run: |
+  #         gh release create "v$VERSION" \
+  #           --title "v$VERSION" \
+  #           --generate-notes \
+  #           *-sbom.json
+  #       env:
+  #         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

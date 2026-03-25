@@ -192,10 +192,11 @@ project-root/
 ├── frontend/             # Frontend code
 ├── backend/              # Backend code
 ├── infrastructure/       # Infrastructure code
-│   ├── dev/
-│   ├── demo/
-│   ├── staging/
-│   └── production/
+│   ├── environments/
+│   │   ├── dev/
+│   │   ├── qa/
+│   │   └── prod/
+│   └── modules/          # Shared IaC modules
 ├── .github/              # GitHub configuration
 │   └── workflows/        # CI/CD workflows
 └── MCP/                  # MCP instructions and configurations

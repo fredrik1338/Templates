@@ -1,0 +1,51 @@
+# =============================================================================
+# Detect Changes — Reusable Workflow
+# =============================================================================
+# Determines which parts of the codebase changed so other workflows
+# can skip unnecessary jobs. Called by CI, deploy, and E2E workflows.
+# =============================================================================
+
+name: Detect Changes
+
+on:
+  workflow_call:
+    outputs:
+      code:
+        description: "Any code changed (not just docs/plans)"
+        value: ${{ jobs.changes.outputs.code }}
+      backend:
+        description: "Backend code changed"
+        value: ${{ jobs.changes.outputs.backend }}
+      frontend:
+        description: "Frontend code changed"
+        value: ${{ jobs.changes.outputs.frontend }}
+      schema:
+        description: "Database schema changed"
+        value: ${{ jobs.changes.outputs.schema }}
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      schema: ${{ steps.filter.outputs.schema }}
+    steps:
+      - uses: actions/checkout@v4
+      # - uses: dorny/paths-filter@v3
+      #   id: filter
+      #   with:
+      #     filters: |
+      #       code:
+      #         - 'backend/**'
+      #         - 'frontend/**'
+      #         - 'MCP/**'
+      #       backend:
+      #         - 'backend/**'
+      #         - 'MCP/**'
+      #       frontend:
+      #         - 'frontend/**'
+      #       schema:
+      #         - 'backend/prisma/schema.prisma'
+      #         - 'backend/prisma/migrations/**'

@@ -1,0 +1,9 @@
+# Secrets — never commit these
+tofu.auto.tfvars
+*.auto.tfvars
+
+# State files — stored remotely, never locally
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl

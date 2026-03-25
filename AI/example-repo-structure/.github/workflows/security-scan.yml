@@ -1,0 +1,55 @@
+# =============================================================================
+# Security Scan — Reusable Workflow
+# =============================================================================
+# Multi-layer security scanning. Called by CI (on PRs) and by the
+# production release workflow (with stricter settings).
+#
+# Layers:
+#   1. Dependency audit (npm audit) — blocks on HIGH/CRITICAL
+#   2. Secret scanning (gitleaks) — blocks on any detected secret
+#   3. Filesystem scan (Trivy) — blocks on HIGH/CRITICAL vulnerabilities
+# =============================================================================
+
+name: Security Scan
+
+on:
+  workflow_call:
+    inputs:
+      scan_history:
+        description: "Scan full git history for secrets (slower, used in releases)"
+        type: boolean
+        default: false
+      fail_on_high:
+        description: "Fail on HIGH severity (not just CRITICAL)"
+        type: boolean
+        default: true
+
+jobs:
+  dependency-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # - run: cd backend && npm audit --audit-level=high
+      # - run: cd frontend && npm audit --audit-level=high
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # - uses: gitleaks/gitleaks-action@v2
+      #   with:
+      #     args: >-
+      #       ${{ inputs.scan_history && 'detect --redact' || 'detect --no-git --redact' }}
+
+  filesystem-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # - uses: aquasecurity/trivy-action@master
+      #   with:
+      #     scan-type: fs
+      #     scan-ref: .
+      #     severity: ${{ inputs.fail_on_high && 'HIGH,CRITICAL' || 'CRITICAL' }}
+      #     exit-code: 1

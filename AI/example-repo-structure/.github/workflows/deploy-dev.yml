@@ -1,0 +1,88 @@
+# =============================================================================
+# Deploy Dev — Automatic Development Deployment
+# =============================================================================
+# Triggered automatically when code is pushed to main (after PR merge).
+# Deploys backend and frontend to the dev environment.
+#
+# Skips deployment for docs-only or infrastructure-only changes.
+# =============================================================================
+
+name: Deploy Dev
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "plans/**"
+      - "security/**"
+      - "infrastructure/**"
+      - "**.md"
+      - "!README.md"
+
+  # Allow manual trigger with options to force-deploy specific services
+  workflow_dispatch:
+    inputs:
+      force_backend:
+        description: "Force backend deploy even if unchanged"
+        type: boolean
+        default: false
+      force_frontend:
+        description: "Force frontend deploy even if unchanged"
+        type: boolean
+        default: false
+
+# env:
+#   ENVIRONMENT: dev
+#   REGION: <preferred-region>
+#   PROJECT_ID: <project>-dev
+
+jobs:
+  detect-changes:
+    uses: ./.github/workflows/detect-changes.yml
+
+  # deploy-backend:
+  #   needs: detect-changes
+  #   if: needs.detect-changes.outputs.backend == 'true' || inputs.force_backend
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: ./.github/actions/cloud-auth
+  #       with:
+  #         workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+  #         service_account: ${{ secrets.WIF_SERVICE_ACCOUNT_DEV }}
+  #
+  #     # Build and push container image
+  #     # - run: docker build -t $REGISTRY/backend:${{ github.sha }} ./backend
+  #     # - run: docker push $REGISTRY/backend:${{ github.sha }}
+  #
+  #     # Run database migrations (if schema changed)
+  #     # - if: needs.detect-changes.outputs.schema == 'true'
+  #     #   run: cd backend && npx prisma migrate deploy
+  #
+  #     # Deploy to dev
+  #     # - run: |
+  #     #     cloud-cli deploy backend \
+  #     #       --image $REGISTRY/backend:${{ github.sha }} \
+  #     #       --region $REGION
+
+  # deploy-frontend:
+  #   needs: detect-changes
+  #   if: needs.detect-changes.outputs.frontend == 'true' || inputs.force_frontend
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: ./.github/actions/cloud-auth
+  #       with:
+  #         workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+  #         service_account: ${{ secrets.WIF_SERVICE_ACCOUNT_DEV }}
+  #
+  #     # Build and push container image
+  #     # - run: docker build -t $REGISTRY/frontend:${{ github.sha }} ./frontend
+  #     # - run: docker push $REGISTRY/frontend:${{ github.sha }}
+  #
+  #     # Deploy to dev
+  #     # - run: |
+  #     #     cloud-cli deploy frontend \
+  #     #       --image $REGISTRY/frontend:${{ github.sha }} \
+  #     #       --region $REGION

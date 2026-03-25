@@ -1,0 +1,78 @@
+# =============================================================================
+# Prepare Release — Version Bump & Changelog Generation
+# =============================================================================
+# Manually triggered when you're ready to cut a release. Creates a PR
+# with a version bump and auto-generated changelog.
+#
+# Flow:
+#   1. Human selects version type (patch / minor / major)
+#   2. Workflow generates changelog from commits since last tag
+#   3. Updates VERSION file and CHANGELOG.md
+#   4. Creates a PR for review
+#   5. After PR merge → run deploy-qa or deploy-prod workflow
+# =============================================================================
+
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: "Version bump type"
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # --- Read current version ---
+      # - id: version
+      #   run: echo "current=$(cat VERSION)" >> $GITHUB_OUTPUT
+
+      # --- Calculate new version ---
+      # - id: bump
+      #   run: |
+      #     IFS='.' read -r major minor patch <<< "${{ steps.version.outputs.current }}"
+      #     case "${{ inputs.version_type }}" in
+      #       major) echo "new=$((major+1)).0.0" >> $GITHUB_OUTPUT ;;
+      #       minor) echo "new=${major}.$((minor+1)).0" >> $GITHUB_OUTPUT ;;
+      #       patch) echo "new=${major}.${minor}.$((patch+1))" >> $GITHUB_OUTPUT ;;
+      #     esac
+
+      # --- Generate changelog from commits since last tag ---
+      # - run: |
+      #     echo "## ${{ steps.bump.outputs.new }}" > /tmp/changelog_entry.md
+      #     echo "" >> /tmp/changelog_entry.md
+      #     git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:"- %s" \
+      #       >> /tmp/changelog_entry.md
+
+      # --- Update files ---
+      # - run: echo "${{ steps.bump.outputs.new }}" > VERSION
+      # - run: |
+      #     cat /tmp/changelog_entry.md > /tmp/new_changelog.md
+      #     echo "" >> /tmp/new_changelog.md
+      #     cat CHANGELOG.md >> /tmp/new_changelog.md
+      #     mv /tmp/new_changelog.md CHANGELOG.md
+
+      # --- Create PR ---
+      # - run: |
+      #     git checkout -b release/v${{ steps.bump.outputs.new }}
+      #     git add VERSION CHANGELOG.md
+      #     git commit -m "chore: prepare release v${{ steps.bump.outputs.new }}"
+      #     git push origin release/v${{ steps.bump.outputs.new }}
+      # - run: |
+      #     gh pr create \
+      #       --title "Release v${{ steps.bump.outputs.new }}" \
+      #       --body "Auto-generated release PR. Review changelog and merge to proceed." \
+      #       --base main
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

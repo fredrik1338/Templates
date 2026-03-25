@@ -1,0 +1,37 @@
+# =============================================================================
+# Reusable Action — Cloud Authentication
+# =============================================================================
+# Authenticates GitHub Actions to the cloud provider using Workload Identity
+# Federation (keyless). Used by all deployment and infrastructure workflows.
+#
+# Usage in a workflow:
+#   - uses: ./.github/actions/cloud-auth
+#     with:
+#       workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+#       service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+name: "Cloud Auth"
+description: "Authenticate to cloud provider using Workload Identity Federation"
+
+inputs:
+  workload_identity_provider:
+    description: "Workload Identity Provider resource name"
+    required: true
+  service_account:
+    description: "Service account email to impersonate"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    # Step 1: Authenticate using OIDC token exchange
+    # - uses: cloud-provider/auth@v2
+    #   with:
+    #     workload_identity_provider: ${{ inputs.workload_identity_provider }}
+    #     service_account: ${{ inputs.service_account }}
+
+    # Step 2: Verify authentication
+    # - run: cloud-cli auth list
+    #   shell: bash
+    - run: echo "Replace with actual cloud authentication steps"
+      shell: bash
